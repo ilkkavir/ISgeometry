@@ -1,0 +1,9 @@
+Package: ISgeometry
+Version: 0.5-6
+Title: ISgeometry
+Author: Ilkka Virtanen <ilkka.i.virtanen@oulu.fi>, Mikko Orispaa<mikko.orispaa@oulu.fi>
+Maintainer: Ilkka Virtanen <ilkka.i.virtanen@oulu.fi>
+Description: IS radar geometry evaluation
+License: FreeBSD
+Depends: maps, mapdata
+Copyright: University of Oulu, Finland
