@@ -6,4 +6,5 @@ Maintainer: Ilkka Virtanen <ilkka.i.virtanen@oulu.fi>
 Description: IS radar geometry evaluation
 License: FreeBSD
 Depends: maps, mapdata
+Suggests: ISspectrum
 Copyright: University of Oulu, Finland
