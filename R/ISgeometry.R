@@ -71,8 +71,8 @@ OVE <- c(69.03,19.29)
 # Abisko
 ABI <- c(68.37,18.75)
 
-# Skibotn (by Cesar)
-SKI <- c(69 + 35/60,20 + 28/60)
+## # Skibotn (by Cesar)
+## SKI <- c(69 + 35/60,20 + 28/60)
 
 # Coordinates by Thomas
 
@@ -103,12 +103,16 @@ HTA <- c(68+23.348/60,23+36.196/60)
 # Palojoensuu
 PLJ <- c(68+16.994/60,23+ 4.807/60 )
 
-# Karesuvanto
-KRS <- c(68+26.960/60 ,22+28.995/60)
+## # Karesuvanto
+## KRS <- c(68+26.960/60 ,22+28.995/60)
 
 # Peera
 PEE <- c(68+53.081/60 ,21+ 3.452/60)
 
+# updated E3D locations from Google maps 20231004
+SKI <- c(69.34,20.31)
+KAR <- c(68.48,22.52)
+KAI <- c(68.27,19.45)
 
 
 
@@ -756,7 +760,7 @@ get3Dresolution.spherical <- function(locTrans,locRec,locScat,fwhmTrans,fwhmRec,
 
 
 
-bistaticResolutions.planar <- function(refPoint,locTrans,locRec,locxy=F,fwhmTrans=1,fwhmRec=1,fwhmRange=1,fwhmIonSlab=100,x=seq(-300,300,by=10),y=seq(-300,300,by=10),heights=c(100,200,500,1000),infinity=defaultInfinity(),phArrTrans=TRUE,phArrRec=TRUE,mineleTrans=0,mineleRec=0){
+bistaticResolutions.planar <- function(refPoint,locTrans,locRec,locxy=F,fwhmTrans=1,fwhmRec=1,fwhmRange=1,fwhmIonSlab=100,x=seq(-300,300,by=10),y=seq(-300,300,by=10),heights=c(100,200,500,1000),infinity=defaultInfinity(),phArrTrans=TRUE,phArrRec=TRUE,mineleTrans=0,mineleRec=0,verbose=FALSE){
 #
 # resolutions at points c(x,y,height), where x is measured along a circle of latitude, and y along a meridian. The distances are  measured from the point refPoint
 #
@@ -846,7 +850,9 @@ bistaticResolutions.planar <- function(refPoint,locTrans,locRec,locxy=F,fwhmTran
     beta         <- array(dim=c(nx,ny,nh))
 
     for(i in seq(nx)){
-        cat(sprintf('\r %5.0f /  %5.0f         ',i,nx))
+        if(verbose){
+            cat(sprintf('\r %5.0f /  %5.0f         ',i,nx))
+        }
         for(j in seq(ny)){
             for(k in seq(nh)){
                 scatPos        <- planarToSpherical.geographic(x=x[i],y=y[j],refPoint=refPoint)
@@ -910,7 +916,9 @@ bistaticResolutions.planar <- function(refPoint,locTrans,locRec,locxy=F,fwhmTran
         }
     }
 
-    cat('\r                                             \r')
+    if(verbose){
+        cat('\r                                             \r')
+    }
 
     return(list(res=res,x=x,y=y,heights=heights,refPoint=refPoint,fwhmTrans=fwhmTrans,fwhmRec=fwhmRec,fwhmRange=fwhmRange,locTrans=locTrans,
                 locRec=locRec,locxy=locxy,xyT=c(xyT$x,xyT$y),xyR=c(xyR$x,xyR$y),lT=lT,lR=lR,kscat=kscat,distTS=distTS,distRS=distRS,
@@ -1475,7 +1483,9 @@ multistaticNoiseLevels <- function(refPoint,locTrans,locRec,locxy=F,fwhmTrans=c(
     n <- 0
     for(i in seq(nTrans)){
         for(j in seq(nRec)){
-            cat(sprintf('Transmitter %d / %d , receiver %d / %d\n',i,nTrans,j,nRec))
+            if(verbose){
+                cat(sprintf('Transmitter %d / %d , receiver %d / %d\n',i,nTrans,j,nRec))
+            }
             n <- (i-1)*nRec+j
 
             # gain integrals etc.
@@ -1543,7 +1553,7 @@ multistaticNoiseLevels <- function(refPoint,locTrans,locRec,locxy=F,fwhmTrans=c(
 
 
 
-multistaticIntegrationTimes <- function(refPoint=KIR,locTrans=c(0,0),locRec=list(c(0,0),c(100,0),c(-100,0),c(0,100),c(0,-100)),locxy=T,fwhmTrans=c(1),fwhmRec=c(1),fwhmRange=c(1),x=seq(-300,300,by=25),y=seq(-300,300,by=25),heights=c(300),infinity=defaultInfinity(),resNS,resEW,resH,resR,Pt=c(1e6),Ne=1e11,fwhmIonSlab=100,Tnoise=c(300),fradar=233e6,tau0=100,phArrTrans=c(TRUE),phArrRec=c(TRUE),targetNoiseLevel=.01,dutyCycle=c(.25),RXduty=1,gdev=NULL,zlim=c(0,5),zlimv=c(2,7),iso.levels=NULL,vel.levels=NULL,printInfo=F,plotResolution=F,NScut=0,heightProf=c(0,0),horCut=TRUE,verbose=FALSE,mineleTrans=0,mineleRec=0,useRaster=FALSE){
+multistaticIntegrationTimes <- function(refPoint=ISgeometry:::SKI,locTrans=ISgeometry:::SKI,locRec=list(ISgeometry:::SKI,ISgeometry:::KAR,ISgeometry:::KAI),locxy=FALSE,fwhmTrans=c(2.2),fwhmRec=c(1.3,1.8,1.8),fwhmRange=c(1),x=seq(-300,300,by=25),y=seq(-300,300,by=25),heights=c(300),infinity=defaultInfinity(),resNS,resEW,resH,resR,Pt=c(3.5e6),Ne=1e11,fwhmIonSlab=100,Tnoise=c(300),fradar=233e6,tau0=100,phArrTrans=c(TRUE),phArrRec=c(TRUE),targetNoiseLevel=.01,dutyCycle=c(.25),RXduty=1,gdev=NULL,zlim=c(0,5),zlimv=c(2,7),iso.levels=NULL,vel.levels=NULL,printInfo=F,plotResolution=F,NScut=0,heightProf=c(0,0),horCut=TRUE,verbose=FALSE,mineleTrans=30,mineleRec=30,useRaster=FALSE){
 #
 # integration times needed to reach target ACF noise level and velocity ACF noise level
 # calculated by comparing to a reference measurement
