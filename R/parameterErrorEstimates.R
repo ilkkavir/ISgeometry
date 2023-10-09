@@ -69,14 +69,14 @@ parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,res
     errtabs <- list()
     errtabs$los <- list()
     # the plasma parameter vector. The velocity is practically independent from the other parameters, so not given as user input.
-    # use .1 to avoid problems at zero frequency with the simple spectrum calculation
+    # use 1e-3 to avoid problems at zero frequency with the simple spectrum calculation
     p <- c(Ne,Ti,Te,Coll,1e-3,Comp)
     # errors with the first noise level
     # try to select a good frequency grid
     if(Coll<3e4){
         freq <- seq(-500,500,by=5)*1e4/tau0/log10(max(Coll,10))
     }else{ # with high collision frequencies the spectrum is very narrow (is this good enough?)
-        freq <- seq(-100,100,by=1)*2e3*Ti/Coll
+        freq <- seq(-100,100,by=1)*2e3*Ti/Coll*(fradar/233e6)**2
     }
     if(alt>hTeTi){
         parinds <- c(dNe=1,dTi=2,dTe=3,dVi=5)
