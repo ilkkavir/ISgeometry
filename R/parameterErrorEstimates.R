@@ -1,11 +1,48 @@
-parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Vi,Coll,Comp,fwhmRange,resR,intTime,pm0=c(30.5,16),hTeTi=110,Tnoise=300,Pt=3.5e6,locTrans=SKI,locRec=list(SKI,KAR,KAI),fwhmTrans=2.1,fwhmRec=c(1.2,1.7,1.7),RXduty=1,mineleTrans=30,mineleRec=30,fradar=233e6,phArrTrans=TRUE,phArrRec=TRUE,fwhmIonSlab=100,dutyCycle=.25){
+parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,resR,intTime,pm0=c(30.5,16),hTeTi=110,Tnoise=300,Pt=3.5e6,locTrans=SKI,locRec=list(SKI,KAR,KAI),fwhmTrans=2.1,fwhmRec=c(1.2,1.7,1.7),RXduty=c(.75,1,1),mineleTrans=30,mineleRec=30,fradar=233e6,phArrTrans=TRUE,phArrRec=TRUE,fwhmIonSlab=100,dutyCycle=.25){
     #
     # Calculate plasma parameter error estimates in the given point with the given radar system
     # and plasma parameters
     #
-    # NOTICE: if we do not make the lookup tables, we can actually directly calculate the errors for
-    #         a correct noise level!
-    #         => do we even need to define the concept of ACF noise level?!?
+    # INPUTS:
+    #   lat          Geocentric latitude of the measurement volume [deg north]
+    #   lon          Geocentric longitude of the measurement volume [deg east]
+    #   alt          Altitude of the measurement volume [km]
+    #   Ne           Electron density [m^-3]
+    #   Ti           Ion temperature [K]
+    #   Te           Electron temperature [K]
+    #   Coll         Ion-neutral collision frequency [Hz]
+    #   Comp         Ion composition (fraction of ion with mass pm0[2] out of the total ion number density)
+    #   fwhmRange    Range resolution in ACF decoding [km]
+    #   resR         Range resolution in the plasma parameter fit [km]
+    #   intTime      Integration time [s], default 10
+    #   pm0          Ion masses [amu], default c(30.5,16)
+    #   hTeTi        Altitude, below which Te=Ti is assumed, [km], default 110
+    #   Tnoise       Receiver noise temperature [K], default 300
+    #   Pt           Transmitter power(s) [W], default 3.5e6
+    #   locTrans     Transmitter location(s), list of lat, lon, [height] in degress [km], default list(c(69.34,20.21))
+    #   locRec       Receiver locations, list of lat, lon, [height] in degrees [km], default list(c(69.34,20.21),c(68.48,22.52),c(68.27,19.45))
+    #   fwhmTrans    Transmitter beam width(s) (at zenithg for phased-arrasy), [full width at half maximu, degrees], default c(2.1)
+    #   fwhmRec      Receiver beam widhts (at zenith for phased-arrays) [full width at half maximum, degrees], default c(1.2,1.7,1.7)
+    #   RXduty       "Receiver duty cycle" for each receiver, default c(.75,1,1)
+    #   mineleTrans  Elevation limit of the transmitter [deg], default c(30)
+    #   mineleRec    Elevation limit of the receivers [deg], default c(30,30,30)
+    #   fradar       Radar system carrier frequency [Hz], default 233e6
+    #   phArrTrans   Logical is (are) the transmitter(s) phased array(s)? Default c(T)
+    #   phArrRec     Logical, are the receivers phased-arrays? A vector with a value for each receiver. Default c(T,T,T)
+    #   fwhmIonSlab  Thickness of the ion slab that causes self-noise [km], default 100
+    #   dutyCycle    Transmitter duty cycle, default 0.25
+    #
+    #
+    # OUTPUT:
+    #   errtabs      A list of error vectors
+    #                  errtabs$los         is a list of error vectors for each individual site. 
+    #                                      In the same order in which the receivers are listed in locRec, fwhmRec, etc. 
+    #                  errtabs$multistatic is an error vector for "multistatic" analysis that merges data from all receivers.
+    #                                      The velocity error estimate is the square root of the trace of the error covariance
+    #                                      matrix of three orthogonal velocity vector components, and thus gives an upper limit 
+    #                                      that the standard deviation of any projection of the velocity vector cannot exceed. If
+    #                                      errors of all vector components are equal, the true error is sqrt(3) times the given error.
+    #
     # IV 2023
     #
 
@@ -31,8 +68,9 @@ parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Vi,Coll,Comp,fwhmRange,
 
     errtabs <- list()
     errtabs$los <- list()
-    # the plasma parameter vector
-    p <- c(Ne,Ti,Te,Coll,Vi,Comp)
+    # the plasma parameter vector. The velocity is practically independent from the other parameters, so not given as user input.
+    # use .1 to avoid problems at zero frequency with the simple spectrum calculation
+    p <- c(Ne,Ti,Te,Coll,1e-3,Comp)
     # errors with the first noise level
     # try to select a good frequency grid
     if(Coll<3e4){
@@ -41,22 +79,25 @@ parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Vi,Coll,Comp,fwhmRange,
         freq <- seq(-100,100,by=1)*2e3*Ti/Coll
     }
     if(alt>hTeTi){
-        parinds <- c(1,2,3,5)
+        parinds <- c(dNe=1,dTi=2,dTe=3,dVi=5)
     }else{
-        parinds <- c(1,2,5)
+        parinds <- c(dNe=1,dTi=2,dVi=5)
     }
     refErrs <- parameterFitErrors(noiseLevel=nlevRef,p=p,pm0=pm0,fradar=fradar,ind=parinds,zeroLag=F,nLag=round(tau0/(dtau*1e6)*10),llag=dtau,freq=freq)
     # scale the errors with the noise levels at the other sites
     for(ii in seq(length(noiseLevels$noiseLevel.site))){
         # we have noise levels per one bit, scale to noise levels after integration
         nlev <- noiseLevels$noiseLevel.site[[ii]]$noiseLevel$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)
-        errtabs$los[[ii]] <- nlev / nlevRef * refErrs
+        errtabs$los[[ii]] <- nlev / nlevRef * refErrs[parinds]
+        names(errtabs$los[[ii]]) <- names(parinds)
     }
     # multistatic analysis, 
     nlevmultis <- noiseLevels$noiseLevel.isotropic$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)
     nlevVel <- noiseLevels$noiseLevel.velocity$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)
     errtabs$multistatic <- nlevmultis / nlevRef * refErrs
     errtabs$multistatic[5] <- nlevVel / nlevRef * refErrs[5]
+    errtabs$multistatic <- errtabs$multistatic[parinds]
+    names(errtabs$multistatic) <- names(parinds)
 
     return(errtabs)
     

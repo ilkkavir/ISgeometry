@@ -95,7 +95,7 @@ parameterFitErrors <- function(noiseLevel=.01,p=c(1e11,300,300,0,0,.3),pm0=c(30.
 
     # normalization to dimensionless units
     s <- s * om0 / p[1] / 9.978688e-29
-plot(freq,s[1,])
+#plot(freq,s[1,])
     # autocorrelation function
     acf <- matrix(nrow=(nfit+1),ncol=nLag)
     tau <- (seq(nLag)-ifelse(zeroLag,1,0))*llag
