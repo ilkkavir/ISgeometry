@@ -8,5 +8,7 @@ ISspectrumSimple <- function(p=c(1e11,300,300,0,0,0),pm0=c(30.5,16),fradar=223e6
     )
 
     return(ISgeometry:::incoherentScatterSpectrum(ele=ele,ion=ion,fradar=fradar,scattAngle=scattAngle,freq=freq))
+#    ss <- ISspectrum.libcerf:::ISspectrum.general(ele=ele,ion=ion,fradar=fradar,scattAngle=scattAngle,freq=freq)
+#    return(list(s=ss))
 
 }

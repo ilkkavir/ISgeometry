@@ -1510,8 +1510,10 @@ multistaticNoiseLevels <- function(refPoint,locTrans,locRec,locxy=F,fwhmTrans=c(
     # combined noise level for uniform parameters
     noiseLevel.isotropic <- noiseLevels[[1]]$noiseLevel
     noiseLevel.isotropic$noiseLevel <- 1/noiseLevels[[1]]$noiseLevel$noiseLevel**2
-    for(k in seq(2,nComb)){
-        noiseLevel.isotropic$noiseLevel <- noiseLevel.isotropic$noiseLevel + 1/noiseLevels[[k]]$noiseLevel$noiseLevel**2
+    if(nComb>1){
+        for(k in seq(2,nComb)){
+            noiseLevel.isotropic$noiseLevel <- noiseLevel.isotropic$noiseLevel + 1/noiseLevels[[k]]$noiseLevel$noiseLevel**2
+        }
     }
 
     noiseLevel.isotropic$noiseLevel <- 1/sqrt(noiseLevel.isotropic$noiseLevel)
