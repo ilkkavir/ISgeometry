@@ -104,7 +104,10 @@ parameterFitErrors <- function(noiseLevel=.01,p=c(1e11,300,300,0,0,.3),pm0=c(30.
             acf[i,j] <- sum(exp(1i*2*pi*freq*tau[j])*s[i,]) * fstep*2*pi/om0
         }
     }
-
+    # zero-lag power
+    acf0  <- sum(s[1,]) * fstep*2*pi/om0
+#plot(Re(acf[1,]))
+#    print(max(abs(acf[1,])))
     
     # ACF differences
     dacf <- t(acf[2:(nfit+1),] )
@@ -125,7 +128,9 @@ parameterFitErrors <- function(noiseLevel=.01,p=c(1e11,300,300,0,0,.3),pm0=c(30.
     Ntau <- round(tau0/llag)
 
     # variance of lagged products
-    lpvar <- noiseLevel**2/4*Ntau
+    lpvar <- noiseLevel**2*Ntau*acf0^2
+#   lpvar <- noiseLevel**2/4*Ntau
+#    lpvar <- noiseLevel**2*Ntau
 
     Sigma <- diag(ncol=(2*nLag),nrow=(2*nLag),lpvar)
 

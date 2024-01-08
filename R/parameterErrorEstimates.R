@@ -83,17 +83,17 @@ parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,res
     }else{
         parinds <- c(dNe=1,dTi=2,dVi=5)
     }
-    refErrs <- parameterFitErrors(noiseLevel=nlevRef,p=p,pm0=pm0,fradar=fradar,ind=parinds,zeroLag=F,nLag=round(tau0/(dtau*1e6)*10),llag=dtau,freq=freq)
+    refErrs <- parameterFitErrors(noiseLevel=nlevRef,p=p,pm0=pm0,fradar=fradar,ind=parinds,zeroLag=F,nLag=round(tau0/(dtau*1e6)*5),llag=dtau,freq=freq)
     # scale the errors with the noise levels at the other sites
     for(ii in seq(length(noiseLevels$noiseLevel.site))){
-        # we have noise levels per one bit, scale to noise levels after integration
-        nlev <- noiseLevels$noiseLevel.site[[ii]]$noiseLevel$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)
+        # we have noise levels per one bit, scale to noise levels after integration and add contribution from Te/Ti
+        nlev <- noiseLevels$noiseLevel.site[[ii]]$noiseLevel$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)*((1+Te/Ti)/2)
         errtabs$los[[ii]] <- nlev / nlevRef * refErrs[parinds]
         names(errtabs$los[[ii]]) <- names(parinds)
     }
     # multistatic analysis, 
-    nlevmultis <- noiseLevels$noiseLevel.isotropic$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)
-    nlevVel <- noiseLevels$noiseLevel.velocity$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)
+    nlevmultis <- noiseLevels$noiseLevel.isotropic$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)*((1+Te/Ti)/2)
+    nlevVel <- noiseLevels$noiseLevel.velocity$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)*((1+Te/Ti)/2)
     errtabs$multistatic <- nlevmultis / nlevRef * refErrs
     errtabs$multistatic[5] <- nlevVel / nlevRef * refErrs[5]
     errtabs$multistatic <- errtabs$multistatic[parinds]
