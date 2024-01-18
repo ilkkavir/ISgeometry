@@ -32,7 +32,7 @@ Errors of Ne, Ti, Te, and Vi at 300 km altitude above Skibotn, when Ne=1e11 m^-3
     parameterErrorEstimates(lat=SKI[1],lon=SKI[2],alt=300,Ne=1e11,Ti=2000,Te=3000,Coll=0,Comp=1,fwhmRange=5,resR=20,intTime=60)
 
 
-##References
+## References
 Matti Vallinkosi, Statistics of incoherent scatter multiparameter fits, Journal of Atmospheric and Terrestrial Physics, 50 (9), 839-851, 1988, [https://doi.org/10.1016/0021-9169(88)90106-7](https://doi.org/10.1016/0021-9169(88)90106-7)
 
 Markku Lehtinen, Ilkka I. Virtanen, and Mikko R. Orispää, EISCAT_3D Measurement Methods Handbook, 2014, [http://urn.fi/urn:isbn:9789526205854](http://urn.fi/urn:isbn:9789526205854)

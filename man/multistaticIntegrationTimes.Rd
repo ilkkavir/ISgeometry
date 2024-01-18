@@ -119,7 +119,7 @@ with fwhmRange}
 
 \references{
 
-    1. Matti Vallinkosi, Statistics of incoherent scatter multiparameter
+    1. Matti Vallinkoski, Statistics of incoherent scatter multiparameter
     fits, Journal of Atmospheric and Terrestrial Physics, 50 (9),
     839-851, 1988, https://doi.org/10.1016/0021-9169(88)90106-7
     
