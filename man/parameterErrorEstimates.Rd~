@@ -1,0 +1,88 @@
+\name{parameterErrorEstimates}
+\alias{parameterErrorEstimates}
+\title{Incoherent scatter plasma parameter fit error estimates}
+
+\title{
+Standard deviations of fitted plasma parameters when measured with the
+given radar system.
+}
+
+
+\usage{
+parameterErrorEstimates(
+        lat,
+        lon,
+        alt,
+         Ne,
+         Ti,
+         Te,
+       Coll,
+       Comp,
+  fwhmRange,
+       resR,
+    intTime,
+        pm0 = c(30.5,16),
+      hTeTi = 110,
+     Tnoise = 300,
+         Pt = 3.5e6,
+   locTrans = SKI,
+     locRec = list(SKI,KAR,KAI),
+  fwhmTrans = 2.1,
+    fwhmRec = c(1.2,1.7,1.7),
+     RXduty = c(.75,1,1),
+mineleTrans = 30,
+  mineleRec = 30,
+     fradar = 233e6,
+ phArrTrans = TRUE,
+   phArrRec = TRUE,
+fwhmIonSlab = 50,
+  dutyCycle = .25)
+}
+
+\arguments{
+\item{lat}{Geocentric latitude of the measurement volume [deg north]}
+\item{lon}{Geocentric longitude of the measurement volume [deg east]}
+\item{alt}{Altitude of the measurement volume [km]}
+\item{Ne}{Electron density [m^-3]}
+\item{Ion temperature [K]}
+\item{Te}{Electron temperature [K]}
+\item{Coll}{Ion-neutral collision frequency [Hz]}
+\item{Comp}{Ion composition (fraction of ion with mass pm0[2] out of the total ion number density)}
+\item{fwhmRange}{Range resolution in ACF decoding [km]}
+\item{resR}{Range resolution in the plasma parameter fit [km]}
+\item{intTime}{Integration time [s], default 10}
+\item{pm0}{Ion masses [amu], default c(30.5,16)}
+\item{hTeTi}{Altitude, below which Te=Ti is assumed, [km], default 110}
+\item{Tnoise}{Receiver noise temperature [K], default 300}
+\item{Pt}{Transmitter power(s) [W], default 3.5e6}
+\item{locTrans}{Transmitter location(s), list of lat, lon, [height] in degress [km], default list(c(69.34,20.21))}
+\item{locRec}{Receiver locations, list of lat, lon, [height] in degrees [km], default list(c(69.34,20.21),c(68.48,22.52),c(68.27,19.45))}
+\item{fwhmTrans}{Transmitter beam width(s) (at zenithg for phased-arrasy), [full width at half maximu, degrees], default c(2.1)}
+\item{fwhmRec}{Receiver beam widhts (at zenith for phased-arrays) [full width at half maximum, degrees], default c(1.2,1.7,1.7)}
+\item{RXduty}{"Receiver duty cycle" for each receiver, default c(.75,1,1)}
+\item{mineleTrans}{Elevation limit of the transmitter [deg], default c(30)}
+\item{mineleRec}{Elevation limit of the receivers [deg], default c(30,30,30)}
+\item{fradar}{Radar system carrier frequency [Hz], default 233e6}
+\item{phArrTrans}{Logical is (are) the transmitter(s) phased array(s)? Default c(T)}
+\item{phArrRec}{Logical, are the receivers phased-arrays? A vector with a value for each receiver. Default c(T,T,T)}
+\item{fwhmIonSlab}{Thickness of the ion slab that causes self-noise [km], default 100}
+\item{dutyCycle}{Transmitter duty cycle, default 0.25}
+}
+
+\value{
+errtabs  A list of error vectors
+
+           errtabs$los is a list of error vectors for each individual site. 
+             In the same order in which the receivers are listed in
+	     locRec, fwhmRec, etc. 
+	     In each vector, the elements are in the order dNe, dTi, dT,
+	     dColl, dVi, dp
+
+           errtabs$multistatic is an error vector for "multistatic"
+	   analysis that merges data from all receivers.
+	     The velocity error estimate is the square root of the trace
+	     of the error covariance matrix of three orthogonal velocity
+             vector components, and thus gives an upper limit that the
+             standard deviation of any projection of the velocity vector
+	     cannot exceed. If errors of all vector components are
+             equal, the true error is sqrt(3) times the given error. 

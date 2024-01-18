@@ -1,4 +1,4 @@
-parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,resR,intTime,pm0=c(30.5,16),hTeTi=110,Tnoise=300,Pt=3.5e6,locTrans=SKI,locRec=list(SKI,KAR,KAI),fwhmTrans=2.1,fwhmRec=c(1.2,1.7,1.7),RXduty=c(.75,1,1),mineleTrans=30,mineleRec=30,fradar=233e6,phArrTrans=TRUE,phArrRec=TRUE,fwhmIonSlab=100,dutyCycle=.25){
+parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,resR,intTime,pm0=c(30.5,16),hTeTi=110,Tnoise=300,Pt=3.5e6,locTrans=SKI,locRec=list(SKI,KAR,KAI),fwhmTrans=2.1,fwhmRec=c(1.2,1.7,1.7),RXduty=c(.75,1,1),mineleTrans=30,mineleRec=30,fradar=233e6,phArrTrans=TRUE,phArrRec=TRUE,fwhmIonSlab=50,dutyCycle=.25){
     #
     # Calculate plasma parameter error estimates in the given point with the given radar system
     # and plasma parameters
@@ -29,7 +29,7 @@ parameterErrorEstimates <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,res
     #   fradar       Radar system carrier frequency [Hz], default 233e6
     #   phArrTrans   Logical is (are) the transmitter(s) phased array(s)? Default c(T)
     #   phArrRec     Logical, are the receivers phased-arrays? A vector with a value for each receiver. Default c(T,T,T)
-    #   fwhmIonSlab  Thickness of the ion slab that causes self-noise [km], default 100
+    #   fwhmIonSlab  Thickness of the ion slab that causes self-noise [km], default 50
     #   dutyCycle    Transmitter duty cycle, default 0.25
     #
     #

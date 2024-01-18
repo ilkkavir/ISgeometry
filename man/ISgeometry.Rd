@@ -1,7 +1,7 @@
 \name{ISgeometry}
 \alias{ISgeometry}
 
-\title{ISgeometry}
+\title{Incoherent Scatter Geometry}
 
 \description{Incoherent scatter radar measurement geometry evaluation}
 
@@ -11,13 +11,21 @@
   Following coordinates are loaded to the global workspace at the time
   when the package is loaded, and are available for the function calls:
 
+  Skibotn      SKI = c(69.34,20.31)
+
+  Kaiseniemi   KAI = c(68.27,19.45)
+
+  Karesuvanto  KAR = c(68.48,22.52)
+
   Tromso       TRO  = c(69.58,19.23)
   
   Kiruna       KIR  = c(67.87,20.43)
 
   Sodankyla    SOD  = c(67.37,26.63)
 
-  Andoya       AND  = c(69.13,15.86)
+  Longyearbyen ESR = c(78.15,16.03)
+
+  Andoya       AND  = c(69.31,16.12)
 
   Esrange      ESRA = c(67.88,21.12)
 
@@ -41,11 +49,7 @@
 
   Overbygd     OVE  = c(69.03,19.29)
 
-  Abisko 	   ABI = c(68.37,18.75)
-
-  Skibotn      SKI = c(69.58,20.47)
-
-  Longyearbyen ESR = c(78.15,16.03)
+  Abisko       ABI = c(68.37,18.75)
 
   Sekkujärvi   SKJ = c(68.11,21.00)
 
@@ -63,11 +67,7 @@
 
   Palojoensuu  PLJ = c(68.28,23.08)
 
-  Karesuvanto  KRS = c(68.45,22.48)
-
   Peera        PEE = c(68.88,21.06)
-
-
 
   FUNCTIONS:
   
@@ -76,6 +76,9 @@
   \code{\link{integrationTimeVsArea}} calculates and/or plots the covered area as function of integration time
 
   \code{\link{savepdf}} save contents of a figure window in a pdf file
+
+  \code{\link{parameterErrorEstimats} Standard deviations of fitted
+  plasma parameters}
 
 }
 

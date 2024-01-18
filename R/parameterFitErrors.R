@@ -1,26 +1,11 @@
-# 
-# Error table calculationos for converting the ACF noise levels into
-# plasma parameter error estimates. 
-# 
-# Reguires the ISspectrum pacakge
-# 
-# IV 2010-2023
-# 
-#  
-#
-# 
-# 
-
-
-
-
 parameterFitErrors <- function(noiseLevel=.01,p=c(1e11,300,300,0,0,.3),pm0=c(30.5,16),fradar=233e6,ind=seq(6),zeroLag=FALSE,nLag=60,llag=233e6/fradar*1e-4,freq=seq(-100000,100000,by=100)*fradar/933.5e6,dp=1e-5){ 
 #
-# Calculate the lookup table of plasma parameter errors for given plasma parameters, 
-# radar carrier frequency, and noise level.
+# Calculate plasma parameter errors for the given ACF noise level plasma parameters, 
+# radar carrier frequency.
 #
 # INPUT:
 #
+#  noiseLevel  The ACF noise level used in the calculations
 #  p           plasma parameters: Ne [m^-3], Ti [K], Te [K], coll [s^-1], Vi [ms^-1], composition (O+/Ne if last element of pm0=16)
 #  pm0         Ion masses in amu
 #  fradar      Radar carrier frequency [Hz]
@@ -30,15 +15,13 @@ parameterFitErrors <- function(noiseLevel=.01,p=c(1e11,300,300,0,0,.3),pm0=c(30.
 #  nLag        Number of lags
 #  llag        Lag separation [s]
 #  freq        Frequency axis in spectrum calculation [Hz]
-#  printLatex  Logical. Should the error table be printed as a readily formatted LaTex table?
-#  noiseLevel  The reference ACF noise level used in the calculations
 #
 # OUTPUT:
-#   errtab (invisible) The final error table
+#   errrors    Standard deviations of the fited plasma parameters, NaN for those parameters that are not fited (ind=0)
 #
 #
 #
-#
+# IV 2023
 # 
 # 
 

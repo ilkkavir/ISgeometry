@@ -1,23 +1,24 @@
 \name{multistaticIntegrationTimes}
 \alias{multistaticIntegrationTimes}
+\title{Incoherent integration time estimation}
+\description{
+  Incoherent integration time required to reach a given ACF noise level
+  in given points in space.
 
-\title{multistaticIntegrationTimes}
+  The radar beams are modelled as 3D normal distributions to enable fast
+  calculations.
 
-
-
-\description{Assuming Gaussian beam shapes and low SNR, the incoherent
-  integration time required to reach a given ACF noise level limit is
-  estimated. The calculations are based on the original monostatic
-  versions of Vallinkoski (1988)}
+  See references for definition of the ACF noise level.
+}
 
 \usage{
        multistaticIntegrationTimes(
-        refPoint = KIR,
-        locTrans = c(0,0),
-          locRec = list(c(0,0),c(100,0),c(-100,0),c(0,100),c(0,-100)),
-           locxy = T,
-       fwhmTrans = c(1),
-         fwhmRec = c(1),
+        refPoint = SKI,
+        locTrans = SKI,
+          locRec = list(SKI,KAR,KAI),
+           locxy = FALSE,
+       fwhmTrans = c(2.2),
+         fwhmRec = c(1.3,1.8,1.8),
        fwhmRange = c(1),
                x = seq(-300,300,by=25),
                y = seq(-300,300,by=25),
@@ -27,14 +28,14 @@
            resEW,
             resH,
             resR,
-              Pt = c(1e6),
+              Pt = c(3.5e6),
               Ne = 1e11,
      fwhmIonSlab = 100,
           Tnoise = c(300),
           fradar = 233e6,
             tau0 = 100,
-      phArrTrans = T,
-        phArrRec = T,
+      phArrTrans = TRUE,
+        phArrRec = TRUE,
 targetNoiseLevel = .01,
        dutyCycle = .25,
           RXduty = 1,
@@ -43,13 +44,14 @@ targetNoiseLevel = .01,
            zlimv = c(2,7),
       iso.levels = c(.1,.3,.7,1,3,7,10,33,67,100,333,667,1000,3333,6667,10000,33333,666667,1000000,3333333,6666667,1e7,3e7,7e7,1e8,3e8,7e8,1e9),
       vel.levels = c(.1,.3,.7,1,3,7,10,33,67,100,333,667,1000,3333,6667,10000,33333,666667,1000000,3333333,6666667,1e7,3e7,7e7,1e8,3e8,7e8,1e9),
-       printInfo = F,
-  plotResolution = F,#
-           NScut = 0,#
-          horCut = TRUE,#
-         verbose = FALSE,#
-     mineleTrans = 0,#
-       mineleRec = 0#
+       printInfo = FALSE,
+  plotResolution = FALSE,
+           NScut = 0,
+          horCut = TRUE,
+         verbose = FALSE,
+     mineleTrans = 30,
+       mineleRec = 30,
+       useRaster = FALSE
        )
 }
 
@@ -77,8 +79,7 @@ targetNoiseLevel = .01,
 with fwhmRange}
 \item{Pt}{         c(Pt1,Pt2,...) transmitter powers [W]. If only one value is given, it is used for all transmitters.}
 \item{Ne}{         electron density [m^-3]}
-\item{fwhmIonSlab}{Slab thickness of the ionosphere. Used in
-  self-noise estimation}
+\item{fwhmIonSlab}{Slab thickness of the ionosphere. Used in self-noise estimation}
 \item{Tnoise}{     system noise temperatures of the receivers [K]. If only one value is given, it is used for all receivers.}
 \item{fradar}{     radar carrier frequency [Hz]}
 \item{tau0}{       ACF time-scale [us]}
@@ -101,8 +102,6 @@ with fwhmRange}
 \item{mineleTrans}{mimimum allowed elevation for transmitter(s) in degrees [0 90]}
 \item{mineleRec}{minimum allowed elevation for receiver(s) in degrees [0 90]}
 \item{useRaster}{rasterize images? Works only with regular grids!}
-
-
 	}
 
 \value{Plots integration time maps for isotropic parameters and
@@ -113,14 +112,29 @@ with fwhmRange}
 
 %\note{}
 
-\author{Ilkka Virtanen (University of Oulu, Finland) \email{ilkka.i.virtanen@oulu.fi}}
+\author{Ilkka Virtanen (University of Oulu, Finland)
+  \email{ilkka.i.virtanen@oulu.fi}}
 
 %\seealso{}
 
-%\references{}
+\references{
+
+    1. Matti Vallinkosi, Statistics of incoherent scatter multiparameter
+    fits, Journal of Atmospheric and Terrestrial Physics, 50 (9),
+    839-851, 1988, https://doi.org/10.1016/0021-9169(88)90106-7
+    
+    2. Markku Lehtinen, Ilkka I. Virtanen, and Mikko R. Orispää,
+    EISCAT_3D Measurement Methods Handbook, 2014,
+    http://urn.fi/urn:isbn:9789526205854
+
+}
 
 
 \examples{
+
+## EISCAT 3D system with the default values
+multistaticIntegrationTimes()
+
 ## Four remotes plus a core transmit/receive site at Kiruna. Positions
 ## given in the xy-coordinate system:
 
