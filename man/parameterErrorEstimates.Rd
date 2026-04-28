@@ -1,42 +1,20 @@
 \name{parameterErrorEstimates}
 \alias{parameterErrorEstimates}
-\title{Incoherent scatter plasma parameter fit error estimates}
+
+\title{Plasma parameter error estimates for an ISR}
 
 \description{
-Standard deviations of fitted plasma parameters when measured with the
-given radar system.
+Calculates plasma parameter error estimates at a specific geocentric location for a given radar system configuration and specified plasma parameters.
 }
-
-
 \usage{
-parameterErrorEstimates(
-        lat,
-        lon,
-        alt,
-         Ne,
-         Ti,
-         Te,
-       Coll,
-       Comp,
-  fwhmRange,
-       resR,
-    intTime,
-        pm0 = c(30.5,16),
-      hTeTi = 110,
-     Tnoise = 300,
-         Pt = 3.5e6,
-   locTrans = SKI,
-     locRec = list(SKI,KAR,KAI),
-  fwhmTrans = 2.1,
-    fwhmRec = c(1.2,1.7,1.7),
-     RXduty = c(.75,1,1),
-mineleTrans = 30,
-  mineleRec = 30,
-     fradar = 233e6,
- phArrTrans = TRUE,
-   phArrRec = TRUE,
-fwhmIonSlab = 50,
-  dutyCycle = .25)
+parameterErrorEstimates(lat, lon, alt, Ne, Ti, Te, Coll, Comp, 
+    fwhmRange, resR, intTime, pm0 = c(30.5, 16), hTeTi = 110, 
+    Tnoise = 300, Pt = 3.5e+06, locTrans = SKI, 
+    locRec = list(SKI, KAR, KAI), fwhmTrans = 2.1, 
+    fwhmRec = c(1.2, 1.7, 1.7), RXduty = c(0.75, 1, 1), 
+    mineleTrans = 30, mineleRec = 30, fradar = 233e+06, 
+    phArrTrans = TRUE, phArrRec = TRUE, fwhmIonSlab = 50, 
+    dutyCycle = 0.25)
 }
 
 \arguments{

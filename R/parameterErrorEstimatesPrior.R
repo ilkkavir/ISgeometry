@@ -1,4 +1,4 @@
-parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,resR,intTime,NePr=1e12,TiPr=1e4,TePr=1e4,CollPr=0,ViPr=1e4,CompPr=0,pm0=c(30.5,16),hTeTi=110,Tnoise=300,Pt=3.5e6,locTrans=SKI,locRec=list(SKI,KAR,KAI),fwhmTrans=2.1,fwhmRec=c(1.2,1.7,1.7),RXduty=c(.75,1,1),mineleTrans=30,mineleRec=30,fradar=233e6,phArrTrans=TRUE,phArrRec=TRUE,fwhmIonSlab=50,dutyCycle=.25){
+parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRange,resR,intTime,NePr=1e12,TiPr=1e4,TePr=1e4,CollPr=0,ViPr=1e4,CompPr=0,pm0=c(30.5,16),Tnoise=300,Pt=3.5e6,locTrans=SKI,locRec=list(SKI,KAR,KAI),fwhmTrans=2.1,fwhmRec=c(1.2,1.7,1.7),RXduty=c(.75,1,1),mineleTrans=30,mineleRec=30,fradar=233e6,phArrTrans=TRUE,phArrRec=TRUE,fwhmIonSlab=50,dutyCycle=.25,maxLag){
     #
     # Calculate plasma parameter error estimates in the given point with the given radar system
     # and plasma parameters
@@ -16,7 +16,6 @@ parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRang
     #   resR         Range resolution in the plasma parameter fit [km]
     #   intTime      Integration time [s], default 10
     #   pm0          Ion masses [amu], default c(30.5,16)
-    #   hTeTi        Altitude, below which Te=Ti is assumed, [km], default 110
     #   Tnoise       Receiver noise temperature [K], default 300
     #   Pt           Transmitter power(s) [W], default 3.5e6
     #   locTrans     Transmitter location(s), list of lat, lon, [height] in degress [km], default list(c(69.34,20.21))
@@ -31,6 +30,7 @@ parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRang
     #   phArrRec     Logical, are the receivers phased-arrays? A vector with a value for each receiver. Default c(T,T,T)
     #   fwhmIonSlab  Thickness of the ion slab that causes self-noise [km], default 50
     #   dutyCycle    Transmitter duty cycle, default 0.25
+    #   maxLag       Longest lag measured [us]. The default setting is 5 times the lag corresponding to the ion thermal speed. 
     #
     #
     # OUTPUT:
@@ -65,6 +65,13 @@ parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRang
 
     dtau <- fwhmRange*1000/3e8*2
 
+    if(missing(maxLag)){
+        nLag <- round(tau0/(dtau*1e6)*5)
+    }else{
+        nLag <- maxLag / (dtau*1e6)
+    }
+    
+
 
     errtabs <- list()
     errtabs$los <- list()
@@ -80,20 +87,23 @@ parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRang
         freq <- seq(-100,100,by=1)*2e3*Ti/Coll*(fradar/233e6)**2
     }
 
-    refErrs <- parameterFitErrorsPrior(noiseLevel=nlevRef,p=p,pPr=pPr,pm0=pm0,fradar=fradar,zeroLag=F,nLag=round(tau0/(dtau*1e6)*5),llag=dtau,freq=freq)
+    #refErrs <- parameterFitErrorsPrior(noiseLevel=nlevRef,p=p,pPr=pPr,pm0=pm0,fradar=fradar,zeroLag=F,nLag=nLag,llag=dtau,freq=freq)
     # scale the errors with the noise levels at the other sites
     for(ii in seq(length(noiseLevels$noiseLevel.site))){
         # we have noise levels per one bit, scale to noise levels after integration and add contribution from Te/Ti
         nlev <- noiseLevels$noiseLevel.site[[ii]]$noiseLevel$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)*((1+Te/Ti)/2)
-        errtabs$los[[ii]] <- nlev / nlevRef * refErrs
+        #errtabs$los[[ii]] <- nlev / nlevRef * refErrs
+        errtabs$los[[ii]] <- parameterFitErrorsPrior(noiseLevel=nlev,p=p,pPr=pPr,pm0=pm0,fradar=fradar,zeroLag=F,nLag=nLag,llag=dtau,freq=freq)
         names(errtabs$los[[ii]]) <- c('dNe','dTi','dTe','dColl','dVi','dComp')
     }
     # multistatic analysis, 
     nlevmultis <- noiseLevels$noiseLevel.isotropic$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)*((1+Te/Ti)/2)
     nlevVel <- noiseLevels$noiseLevel.velocity$noiseLevel[1,1,1]*sqrt(dtau/dutyCycle/intTime)*((1+Te/Ti)/2)
-    errtabs$multistatic <- nlevmultis / nlevRef * refErrs
-    errtabs$multistatic[5] <- nlevVel / nlevRef * refErrs[5]
-    errtabs$multistatic <- errtabs$multistatic
+    errtabs$multistatic <- parameterFitErrorsPrior(noiseLevel=nlevmultis,p=p,pPr=pPr,pm0=pm0,fradar=fradar,zeroLag=F,nLag=nLag,llag=dtau,freq=freq)
+    errtabs$multistatic[5] <- parameterFitErrorsPrior(noiseLevel=nlevVel,p=p,pPr=pPr,pm0=pm0,fradar=fradar,zeroLag=F,nLag=nLag,llag=dtau,freq=freq)[5]
+    ## errtabs$multistatic <- nlevmultis / nlevRef * refErrs
+    ## errtabs$multistatic[5] <- nlevVel / nlevRef * refErrs[5]
+    ## errtabs$multistatic <- errtabs$multistatic
     names(errtabs$multistatic) <- c('dNe','dTi','dTe','dColl','dVi','dComp')
 
     return(errtabs)
