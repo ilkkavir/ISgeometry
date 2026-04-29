@@ -68,7 +68,7 @@ parameterErrorEstimatesPrior <- function(lat,lon,alt,Ne,Ti,Te,Coll,Comp,fwhmRang
     if(missing(maxLag)){
         nLag <- round(tau0/(dtau*1e6)*5)
     }else{
-        nLag <- maxLag / (dtau*1e6)
+        nLag <- ceiling(maxLag / (dtau*1e6))
     }
     
 
